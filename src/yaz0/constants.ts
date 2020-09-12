@@ -1,0 +1,11 @@
+export const HEADER_LENGTH = 16
+export const MAGIC_STRING = 'Yaz0'
+export const GROUP_HEADER_LENGTH = 1
+export const MIN_CHUNK_LENGTH = 1
+export const MIN_BACKREF_CHUNK_LENGTH = 2
+export const MAX_CHUNK_LENGTH = 3
+export const CHUNK_DISTANCE_OFFSET = 1
+export const SHORT_CHUNK_LENGTH_OFFSET = 2
+export const LONG_CHUNK_LENGTH_OFFSET = 18
+export const CHUNKS_PER_GROUP = 8
+export const MAX_DISTANCE = 0x1000

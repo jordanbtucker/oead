@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "plugin:import/typescript",
+    "plugin:node/recommended-module",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier/@typescript-eslint"
+  ],
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "rules": {
+    "node/no-missing-import": [
+      "error",
+      {
+        "tryExtensions": [".ts", ".tsx", ".js", ".json", ".node"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "oead",
+  "version": "0.0.0",
+  "description": "Starting point for TypeScript projects",
+  "private": true,
+  "main": "lib",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "engines": {
+    "node": "^10.17 || ^12 || >=14"
+  },
+  "scripts": {
+    "build": "run-s clean compile",
+    "clean": "rimraf lib",
+    "compile": "tsc",
+    "coverage": "run-s -c spec tap-coverage",
+    "docs": "typedoc",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx --fix .",
+    "lint": "run-s eslint prettier",
+    "prettier": "prettier --loglevel warn --write **/*.{babelrc,css,html,js,json,jsx,md,scss,ts,tsx,yml}",
+    "preversion": "run-s test docs",
+    "spec": "run-s build tap",
+    "start": "node lib",
+    "tap": "tap test -R spec",
+    "tap-coverage": "tap --coverage-report html",
+    "test": "run-s build lint tap"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^14.10.1",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.8.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.3.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.0.3",
+    "tap": "^14.10.8",
+    "ts-node": "^9.0.0",
+    "typedoc": "^0.19.1",
+    "typescript": "^4.0.2"
+  }
+}
