@@ -170,7 +170,7 @@ export function decompress(): Transform {
 
     const newOutput = Buffer.alloc(newOutputPos + maxDecompressedRemaining)
 
-    output.copy(newOutput, 0, outputPos - newOutputPos)
+    output.copy(newOutput, 0, outputPos - newOutputPos, outputPos)
     output = newOutput
     outputPos = newOutputPos
   }
