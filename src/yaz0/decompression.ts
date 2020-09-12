@@ -189,7 +189,13 @@ export function decompress(): Transform {
         // If we're in the middle of reading the buffer, append the chunk to the
         // buffer. Otherwise, the chunk is our new buffer.
         if (pos < input.byteLength) {
-          input = Buffer.concat([input, chunk])
+          const newInput = Buffer.alloc(
+            input.byteLength - pos + chunk.byteLength,
+          )
+          input.copy(newInput, 0, pos)
+          chunk.copy(newInput, input.byteLength - pos)
+          input = newInput
+          pos = 0
         } else {
           input = chunk
           pos = 0
