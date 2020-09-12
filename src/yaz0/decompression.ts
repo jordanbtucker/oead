@@ -6,9 +6,11 @@ import {
   HEADER_LENGTH,
   LONG_CHUNK_LENGTH_OFFSET,
   MAGIC_STRING,
-  MAX_CHUNK_LENGTH,
-  MAX_DISTANCE,
-  MIN_BACKREF_CHUNK_LENGTH,
+  MAX_CHUNK_INPUT_LENGTH,
+  MAX_CHUNK_DISTANCE,
+  MAX_GROUP_OUTPUT_LENGTH,
+  MIN_GROUP_INPUT_LENGTH,
+  MIN_BACKREF_CHUNK_INPUT_LENGTH,
   SHORT_CHUNK_LENGTH_OFFSET,
 } from './constants'
 
@@ -25,73 +27,73 @@ import {
  * ```
  */
 export function decompress(): Transform {
-  let buffer = Buffer.alloc(0)
+  let input = Buffer.alloc(0)
   let pos = 0
   let isHeaderRead = false
-  let outputLength = 0
-  let decompressedLength: number
-  let output = Buffer.alloc(0)
+  let decompressedRemaining: number
+  let output: Buffer
+  let outputPos = 0
 
   function readHeader() {
     // Ensure the header begins with the ASCII string `Yaz0`. Otherwise, the
     // input is invalid.
     if (
-      buffer.slice(0, MAGIC_STRING.length).toString('ascii') !== MAGIC_STRING
+      input.slice(0, MAGIC_STRING.length).toString('ascii') !== MAGIC_STRING
     ) {
       throw getInvalidInputError()
     }
 
     // The next four bytes represent the length of the data after is has been
     // decompressed.
-    decompressedLength = buffer.readUInt32BE(MAGIC_STRING.length)
+    decompressedRemaining = input.readUInt32BE(MAGIC_STRING.length)
 
-    // The next eight bytes are reserved and can be ignored for now. We don't
-    // need any more information from the header, so we truncate the buffer.
+    // The next eight bytes are reserved and can be ignored for now.
     pos = HEADER_LENGTH
-    buffer = Buffer.from(buffer.slice(pos))
-    pos = 0
+
+    // Allocate enough memory required to store the rest of the decompressed
+    // data from the current input buffer at its max potential length.
+    output = Buffer.alloc(getMaxDecompressedRemaining())
+
     isHeaderRead = true
   }
 
-  function readGroup(): Buffer | null {
-    // If we've reached the end of the buffer, return null to signal that there
-    // are no more groups to read.
-    if (pos === buffer.byteLength) {
-      return null
+  function readGroup() {
+    // If we've reached the end of the buffer, return early.
+    if (pos === input.byteLength) {
+      return
     }
 
-    let groupHeader = buffer[pos++]
+    let groupHeader = input[pos++]
     let remainingChunks = CHUNKS_PER_GROUP
-    let result = Buffer.alloc(0)
 
     // Chunk groups are read until the end of input, and the final chunk group
     // can end early.
-    while (remainingChunks > 0 && pos < buffer.byteLength) {
+    while (remainingChunks > 0 && pos < input.byteLength) {
       // Each bit of the group header represents the type of its corresponding
       // chunk. We shift the group header to the left after each chunk so we
       // only need to check the MSB each time.
       if (groupHeader & 0x80) {
         // A set bit means the next chunk is a single byte that is not
         // compressed and can be returned as-is.
-        const byteBuffer = Buffer.from([buffer[pos++]])
-        result = Buffer.concat([result, byteBuffer])
-        output = Buffer.concat([output, byteBuffer])
+        output[outputPos++] = input[pos++]
+        decompressedRemaining--
       } else {
         // A clear bit means the next chunk is a reference to a previous
         // sequence of data in the decompressed output. If we have not received
         // enough data to read the next chunk, the input is invalid.
-        if (buffer.byteLength - pos < MIN_BACKREF_CHUNK_LENGTH) {
+        if (input.byteLength - pos < MIN_BACKREF_CHUNK_INPUT_LENGTH) {
           throw getInvalidInputError()
         }
 
         // The chunk is either long or short. If the chunk is long and we have
         // not received enough data to read the chunk, the input is invalid.
-        const chunk = buffer.readUInt16BE(pos)
-        pos += MIN_BACKREF_CHUNK_LENGTH
+        const chunk = input.readUInt16BE(pos)
+        pos += MIN_BACKREF_CHUNK_INPUT_LENGTH
         const isLongChunk = (chunk & 0xf000) === 0
         if (
           isLongChunk &&
-          buffer.byteLength - pos < MAX_CHUNK_LENGTH - MIN_BACKREF_CHUNK_LENGTH
+          input.byteLength - pos <
+            MAX_CHUNK_INPUT_LENGTH - MIN_BACKREF_CHUNK_INPUT_LENGTH
         ) {
           throw getInvalidInputError()
         }
@@ -101,12 +103,12 @@ export function decompress(): Transform {
         // output and length determines the backreferenced data.
         const distance = (chunk & 0x0fff) + CHUNK_DISTANCE_OFFSET
         const length = isLongChunk
-          ? buffer[pos++] + LONG_CHUNK_LENGTH_OFFSET
+          ? input[pos++] + LONG_CHUNK_LENGTH_OFFSET
           : (chunk >> 12) + SHORT_CHUNK_LENGTH_OFFSET
 
         // If the distance is too far from the end of the output, the input is
         // invalid.
-        const start = output.byteLength - distance
+        const start = outputPos - distance
         const end = start + length
         if (start < 0) {
           throw getInvalidInputError()
@@ -115,105 +117,63 @@ export function decompress(): Transform {
         // Since a backreference can reference itself in whole or part, we need
         // to read each byte from the output individually.
         for (let i = start; i < end; i++) {
-          const byteBuffer = Buffer.from([output[i]])
-          result = Buffer.concat([result, byteBuffer])
-          output = Buffer.concat([output, byteBuffer])
+          output[outputPos++] = output[i]
+          decompressedRemaining--
         }
       }
 
       groupHeader <<= 1
       remainingChunks--
     }
-
-    outputLength += result.byteLength
-    return result
   }
 
-  // function readChunks(): Buffer {
-  //   let remainingChunks = 0
-  //   let groupHeader = 0
-  //   let result = Buffer.alloc(0)
+  /**
+   * Calculates the amount of memory required to store the rest of the
+   * decompressed data from the current input buffer at its max potential
+   * length.
+   */
+  function getMaxDecompressedRemaining(): number {
+    return Math.min(
+      decompressedRemaining,
+      Math.ceil((input.byteLength - pos) / MIN_GROUP_INPUT_LENGTH) *
+        MAX_GROUP_OUTPUT_LENGTH,
+    )
+  }
 
-  //   // Chunk groups are read until the end of input and the final chunk group
-  //   // can end early.
-  //   while (pos < buffer.byteLength) {
-  //     // If we have not received enough data to read the next group header and
-  //     // chunk, the input is invalid.
-  //     if (buffer.byteLength - pos < GROUP_HEADER_LENGTH + MIN_CHUNK_LENGTH) {
-  //       throw getInvalidInputError()
-  //     }
+  /**
+   * Expands the output buffer to store enough memory to decompress the
+   * remainder of the current buffer or the entire stream, whichever is smaller.
+   */
+  function expandOutputBuffer() {
+    const outputAvailable = output.byteLength - outputPos
 
-  //     if (remainingChunks === 0) {
-  //       groupHeader = buffer[pos++]
-  //       remainingChunks = CHUNKS_PER_GROUP
-  //     }
+    // If we have enough room to store the rest of the decompressed data, there
+    // is no need to expand the output buffer.
+    if (outputAvailable >= decompressedRemaining) {
+      return
+    }
 
-  //     // Each bit of the group header represents the type of its corresponding
-  //     // chunk. We shift the group header to the left after each chunk so we
-  //     // only need to check the MSB each time.
-  //     if (groupHeader & 0x80) {
-  //       // A set bit means the next chunk is a single byte that is not
-  //       // compressed and can be returned as-is.
-  //       const byteBuffer = Buffer.from([buffer[pos++]])
-  //       result = Buffer.concat([result, byteBuffer])
-  //       output = Buffer.concat([output, byteBuffer])
-  //     } else {
-  //       // A clear bit means the next chunk is a reference to a previous
-  //       // sequence of data in the decompressed output. If we have not received
-  //       // enough data to read the next chunk, the input is invalid.
-  //       if (buffer.byteLength - pos < MIN_BACKREF_CHUNK_LENGTH) {
-  //         throw getInvalidInputError()
-  //       }
+    // Calculate the amount of memory required to store the rest of the
+    // decompressed data from the current input buffer at its max potential
+    // length.
+    const maxDecompressedRemaining = getMaxDecompressedRemaining()
 
-  //       // The chunk is either long or short. If the chunk is long and we have
-  //       // not received enough data to read the chunk, the input is invalid.
-  //       const chunk = buffer.readUInt16BE(pos)
-  //       pos += MIN_BACKREF_CHUNK_LENGTH
-  //       const isLongChunk = (chunk & 0xf000) === 0
-  //       if (
-  //         isLongChunk &&
-  //         buffer.byteLength - pos < MAX_CHUNK_LENGTH - MIN_BACKREF_CHUNK_LENGTH
-  //       ) {
-  //         throw getInvalidInputError()
-  //       }
+    // If we have enough room to store the rest of the decompressed data, there
+    // is no need to expand the output buffer.
+    if (outputAvailable >= maxDecompressedRemaining) {
+      return
+    }
 
-  //       // Each chunk represents a backreference to a sequnce of data in the
-  //       // output we have decompressed so far. The distance from the end of the
-  //       // output and length determines the backreferenced data.
-  //       const distance = (chunk & 0x0fff) + CHUNK_DISTANCE_OFFSET
-  //       const length = isLongChunk
-  //         ? buffer[pos++] + LONG_CHUNK_LENGTH_OFFSET
-  //         : (chunk >> 12) + SHORT_CHUNK_LENGTH_OFFSET
+    // The new output position must accomdate for the max chunk distance for
+    // backreferences.
+    const newOutputPos = Math.min(outputPos, MAX_CHUNK_DISTANCE)
 
-  //       // If the distance is too far from the end of the output, the input is
-  //       // invalid.
-  //       const start = output.byteLength - distance
-  //       const end = start + length
-  //       if (start < 0) {
-  //         throw getInvalidInputError()
-  //       }
+    const newOutput = Buffer.alloc(newOutputPos + maxDecompressedRemaining)
 
-  //       // Since a backreference can reference itself in whole or part, we need
-  //       // to read each byte from the output individually.
-  //       for (let i = 0; i < end; i++) {
-  //         const byteBuffer = Buffer.from([output[i]])
-  //         result = Buffer.concat([result, byteBuffer])
-  //         output = Buffer.concat([output, byteBuffer])
-  //       }
-  //     }
-
-  //     groupHeader <<= 1
-  //     remainingChunks--
-  //   }
-
-  //   // Backreferences can only reach so far, so we truncate the output.
-  //   if (output.byteLength > MAX_DISTANCE) {
-  //     output = Buffer.from(output.slice(output.byteLength - MAX_DISTANCE))
-  //   }
-
-  //   outputLength += result.byteLength
-  //   return result
-  // }
+    output.copy(newOutput, 0, outputPos - newOutputPos)
+    output = newOutput
+    outputPos = newOutputPos
+  }
 
   function getInvalidInputError(): Error {
     return new Error('Invalid input encountered while decompressing.')
@@ -228,17 +188,17 @@ export function decompress(): Transform {
       try {
         // If we're in the middle of reading the buffer, append the chunk to the
         // buffer. Otherwise, the chunk is our new buffer.
-        if (pos < buffer.byteLength) {
-          buffer = Buffer.concat([buffer, chunk])
+        if (pos < input.byteLength) {
+          input = Buffer.concat([input, chunk])
         } else {
-          buffer = chunk
+          input = chunk
           pos = 0
         }
 
         if (!isHeaderRead) {
           // If we have not received enough data to read the entire header,
           // defer reading the header.
-          if (buffer.byteLength - pos < HEADER_LENGTH) {
+          if (input.byteLength - pos < HEADER_LENGTH) {
             callback()
             return
           }
@@ -246,32 +206,28 @@ export function decompress(): Transform {
           readHeader()
         }
 
-        const groups = []
+        expandOutputBuffer()
+        const prevOutputPos = outputPos
 
         // Read groups while we have enough data to read a group at its max
         // potential length. This check is performed in `transform` but not in
         // `flush`.
         while (
-          buffer.byteLength - pos >=
-          GROUP_HEADER_LENGTH + MAX_CHUNK_LENGTH * CHUNKS_PER_GROUP
+          input.byteLength - pos >=
+          GROUP_HEADER_LENGTH + MAX_CHUNK_INPUT_LENGTH * CHUNKS_PER_GROUP
         ) {
-          const group = readGroup()
-
-          // A null return value indicates that we have reached the end of the
-          // buffer.
-          if (group == null) {
+          const prevDecompressedRemaining = decompressedRemaining
+          readGroup()
+          if (decompressedRemaining === prevDecompressedRemaining) {
             break
           }
-
-          groups.push(group)
         }
 
-        // Backreferences can only reach so far, so we truncate the output.
-        if (output.byteLength > MAX_DISTANCE) {
-          output = Buffer.from(output.slice(output.byteLength - MAX_DISTANCE))
-        }
+        const result =
+          outputPos > prevOutputPos
+            ? output.slice(prevOutputPos, outputPos)
+            : undefined
 
-        const result = groups.length > 0 ? Buffer.concat(groups) : undefined
         callback(null, result)
       } catch (err) {
         callback(err)
@@ -282,26 +238,31 @@ export function decompress(): Transform {
         if (!isHeaderRead) {
           // If we have not received enough data to read the entire header, the
           // input is invalid.
-          if (buffer.byteLength - pos < HEADER_LENGTH) {
+          if (input.byteLength - pos < HEADER_LENGTH) {
             throw getInvalidInputError()
           }
 
           readHeader()
         }
 
-        // Read groups until null is returned.
-        const groups = []
-        for (let group = readGroup(); group != null; group = readGroup()) {
-          groups.push(group)
-        }
+        expandOutputBuffer()
+        const prevOutputPos = outputPos
 
-        const result = groups.length > 0 ? Buffer.concat(groups) : undefined
+        // Read groups until the end of the stream.
+        while (decompressedRemaining > 0) {
+          readGroup()
+        }
 
         // Ensure that the length of decompressed data matches the value in the
         // header. Otherwise, the input is invalid.
-        if (outputLength !== decompressedLength) {
+        if (decompressedRemaining !== 0) {
           throw getInvalidInputError()
         }
+
+        const result =
+          outputPos > prevOutputPos
+            ? output.slice(prevOutputPos, outputPos)
+            : undefined
 
         callback(null, result)
       } catch (err) {
