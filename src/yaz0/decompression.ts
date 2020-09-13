@@ -2,6 +2,7 @@ import {Transform, TransformCallback} from 'stream'
 import {
   CHUNKS_PER_GROUP,
   CHUNK_DISTANCE_OFFSET,
+  DEFAULT_DECOMPRESSED_BUFFER_LIMIT,
   GROUP_HEADER_LENGTH,
   HEADER_LENGTH,
   LONG_CHUNK_LENGTH_OFFSET,
@@ -14,10 +15,17 @@ import {
   SHORT_CHUNK_LENGTH_OFFSET,
 } from './constants'
 
+/** Options for configuring Yaz0 decompression. */
+interface DecompressOptions {
+  /** The target length of the buffer used for decompressed data. */
+  decompressedBufferLimit: number
+}
+
 /**
  * Decompresses a stream that has been compressed via the Yaz0 algorithm.
  *
- * @returns A Transform stream that can be accepts compressed data and outputs
+ * @param options Options for configuring the decompression.
+ * @returns A Transform stream that accepts compressed data and outputs
  * decompressed data.
  * @example
  * ```
@@ -26,7 +34,11 @@ import {
  *   .pipe(createWriteStream('ActorInfo.product.byml'))
  * ```
  */
-export function decompress(): Transform {
+export function decompress(options?: DecompressOptions): Transform {
+  const {decompressedBufferLimit} = options || {
+    decompressedBufferLimit: DEFAULT_DECOMPRESSED_BUFFER_LIMIT,
+  }
+
   let input = Buffer.alloc(0)
   let pos = 0
   let isHeaderRead = false
@@ -135,8 +147,11 @@ export function decompress(): Transform {
   function getMaxDecompressedRemaining(): number {
     return Math.min(
       decompressedRemaining,
-      Math.ceil((input.byteLength - pos) / MIN_GROUP_INPUT_LENGTH) *
-        MAX_GROUP_OUTPUT_LENGTH,
+      Math.max(
+        decompressedBufferLimit,
+        Math.ceil((input.byteLength - pos) / MIN_GROUP_INPUT_LENGTH) *
+          MAX_GROUP_OUTPUT_LENGTH,
+      ),
     )
   }
 
