@@ -9,8 +9,7 @@
       "request": "launch",
       "name": "Launch Program",
       "program": "${file}",
-      "skipFiles": ["node_modules/**", "<node_internals>/**"],
-      "args": ["-r", "ts-node/register"]
+      "skipFiles": ["node_modules/**", "<node_internals>/**"]
     }
   ]
 }
