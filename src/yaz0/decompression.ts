@@ -46,6 +46,7 @@ export function decompress(options?: DecompressOptions): Transform {
   let output: Buffer
   let outputPos = 0
 
+  /** Reads the header from the input buffer. */
   function readHeader() {
     // Ensure the header begins with the ASCII string `Yaz0`. Otherwise, the
     // input is invalid.
@@ -69,8 +70,9 @@ export function decompress(options?: DecompressOptions): Transform {
     isHeaderRead = true
   }
 
+  /** Reads a single group from the input buffer. */
   function readGroup() {
-    // If we've reached the end of the buffer, return early.
+    // If we've reached the end of the input buffer, return early.
     if (pos === input.byteLength) {
       return
     }
@@ -157,7 +159,7 @@ export function decompress(options?: DecompressOptions): Transform {
 
   /**
    * Expands the output buffer to store enough memory to decompress the
-   * remainder of the current buffer or the entire stream, whichever is smaller.
+   * remainder of the input buffer or the entire stream, whichever is smaller.
    */
   function expandOutputBuffer() {
     const outputAvailable = output.byteLength - outputPos
@@ -190,6 +192,7 @@ export function decompress(options?: DecompressOptions): Transform {
     outputPos = newOutputPos
   }
 
+  /** Returns an error indicating that the input is invalid. */
   function getInvalidInputError(): Error {
     return new Error('Invalid input encountered while decompressing.')
   }
