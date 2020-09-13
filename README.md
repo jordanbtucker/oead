@@ -14,3 +14,7 @@ At this time, only Yaz0 decompression is implemented.
 ```bash
 npm install --save oead
 ```
+
+## API
+
+See the [API documentation](https://jordanbtucker.github.io/oead/globals.html).
