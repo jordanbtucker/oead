@@ -4,7 +4,7 @@ const {createReadStream} = require('fs')
 const {join} = require('path')
 const {readdir} = require('fs').promises
 
-const {decompress} = require('../../').yaz0
+const {decompress} = require('../../../').yaz0
 
 t.test('decompress', async t => {
   const fixtureNames = await readdir('test/yaz0/fixtures/compressed')
