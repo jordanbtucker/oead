@@ -47,7 +47,7 @@
     "preversion": "run-s test docs",
     "spec": "run-s build tap",
     "start": "node lib",
-    "tap": "tap test -R spec -t 0",
+    "tap": "tap -R spec -t 0 --test-ignore /util/",
     "tap-coverage": "tap --coverage-report html",
     "test": "run-s build lint tap"
   },
