@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>oead</title>
+	<title>&quot;yaz0/compression&quot; | oead</title>
 	<meta name="description" content="Documentation for oead">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">oead</a>
+					<a href="../index.html" class="title">oead</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -53,10 +53,13 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_yaz0_compression_.html">&quot;yaz0/compression&quot;</a>
 				</li>
 			</ul>
-			<h1>oead</h1>
+			<h1>Module &quot;yaz0/compression&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -68,44 +71,78 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Modules</h3>
+							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-module"><a href="modules/_index_.html" class="tsd-kind-icon">&quot;index&quot;</a></li>
-								<li class="tsd-kind-module"><a href="modules/_yaz0_compression_.html" class="tsd-kind-icon">&quot;yaz0/compression&quot;</a></li>
-								<li class="tsd-kind-module"><a href="modules/_yaz0_constants_.html" class="tsd-kind-icon">&quot;yaz0/constants&quot;</a></li>
-								<li class="tsd-kind-module"><a href="modules/_yaz0_decompression_.html" class="tsd-kind-icon">&quot;yaz0/decompression&quot;</a></li>
-								<li class="tsd-kind-module"><a href="modules/_yaz0_index_.html" class="tsd-kind-icon">&quot;yaz0/index&quot;</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_yaz0_compression_.html#compress" class="tsd-kind-icon">compress</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="compress" class="tsd-anchor"></a>
+					<h3>compress</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">compress<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transform</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in yaz0/compression.ts:24</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Compresses a stream via the Yaz0 algorithm.</p>
+								</div>
+								<p><strong>Warning:</strong> This implementation currently performs no real compression, and
+								in fact results in larger files, but it does produce valid Yaz0 files.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js">createReadStream(<span class="hljs-string">&#x27;ActorInfo.product.byml&#x27;</span>)
+  .pipe(compress())
+  .pipe(createWriteStream(<span class="hljs-string">&#x27;ActorInfo.product.sbyml&#x27;</span>))</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Transform</span></h4>
+							<p>A Transform stream that accepts data and outputs compressed data.</p>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals current ">
-						<a href="globals.html"><em>Globals</em></a>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_index_.html">&quot;index&quot;</a>
+						<a href="_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="_yaz0_compression_.html">&quot;yaz0/compression&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_yaz0_compression_.html">&quot;yaz0/compression&quot;</a>
+						<a href="_yaz0_constants_.html">&quot;yaz0/constants&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_yaz0_constants_.html">&quot;yaz0/constants&quot;</a>
+						<a href="_yaz0_decompression_.html">&quot;yaz0/decompression&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_yaz0_decompression_.html">&quot;yaz0/decompression&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/_yaz0_index_.html">&quot;yaz0/index&quot;</a>
+						<a href="_yaz0_index_.html">&quot;yaz0/index&quot;</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_yaz0_compression_.html#compress" class="tsd-kind-icon">compress</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -126,6 +163,6 @@
 	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>
