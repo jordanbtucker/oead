@@ -53,7 +53,9 @@ export function decompress(options?: DecompressOptions): Transform {
     if (
       input.slice(0, MAGIC_STRING.length).toString('ascii') !== MAGIC_STRING
     ) {
-      throw getInvalidInputError()
+      throw getInvalidInputError(
+        `The magic string ${MAGIC_STRING} was not found.`,
+      )
     }
 
     // The next four bytes represent the length of the data after is has been
@@ -96,7 +98,7 @@ export function decompress(options?: DecompressOptions): Transform {
         // sequence of data in the decompressed output. If we have not received
         // enough data to read the next chunk, the input is invalid.
         if (input.byteLength - pos < MIN_BACKREF_CHUNK_INPUT_LENGTH) {
-          throw getInvalidInputError()
+          throw getInvalidInputError('The input ended prematurely.')
         }
 
         // The chunk is either long or short. If the chunk is long and we have
@@ -109,7 +111,7 @@ export function decompress(options?: DecompressOptions): Transform {
           input.byteLength - pos <
             MAX_CHUNK_INPUT_LENGTH - MIN_BACKREF_CHUNK_INPUT_LENGTH
         ) {
-          throw getInvalidInputError()
+          throw getInvalidInputError('The input ended prematurely.')
         }
 
         // Each chunk represents a backreference to a sequnce of data in the
@@ -125,7 +127,9 @@ export function decompress(options?: DecompressOptions): Transform {
         const start = outputPos - distance
         const end = start + length
         if (start < 0) {
-          throw getInvalidInputError()
+          throw getInvalidInputError(
+            'Tried to back reference data further back than the maximum distance.',
+          )
         }
 
         // Since a backreference can reference itself in whole or part, we need
@@ -193,8 +197,11 @@ export function decompress(options?: DecompressOptions): Transform {
   }
 
   /** Returns an error indicating that the input is invalid. */
-  function getInvalidInputError(): Error {
-    return new Error('Invalid input encountered while decompressing.')
+  function getInvalidInputError(message?: string): Error {
+    return new Error(
+      'Invalid input was encountered while decompressing.' +
+        (message == null ? '' : ' ' + message),
+    )
   }
 
   return new Transform({
