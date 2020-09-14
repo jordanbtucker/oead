@@ -1,3 +1,4 @@
+import {createReadStream, OpenMode, PathLike} from 'fs'
 import {Transform, TransformCallback} from 'stream'
 import {
   CHUNKS_PER_GROUP,
@@ -320,5 +321,127 @@ export function decompress(options?: {
         callback(err)
       }
     },
+  })
+}
+
+/**
+ * Asynchronously decompresses the entire contents of a file.
+ *
+ * @param path A path to a file.
+ *
+ * @returns A Promise that resolves with a Buffer containing the decompressed
+ * contents of the file.
+ *
+ * @example
+ * ```js
+ * const buffer = await decompressFile('ActorInfo.product.sbyml')
+ * await writeFile('ActorInfo.product.byml', buffer)
+ * ```
+ */
+export async function decompressFile(path: PathLike): Promise<Buffer>
+
+/**
+ * Asynchronously decompresses the entire contents of a file.
+ *
+ * @param path A path to a file.
+ * @param encoding The encoding for the file.
+
+ * @returns A Promise that resolves with a string containing the decompressed
+ * contents of the file.
+ *
+ * @example
+ * ```js
+ * const text = await decompressFile('ActorInfo.product.sbyml', 'utf8')
+ * await writeFile('ActorInfo.product.byml', text)
+ * ```
+ */
+export async function decompressFile(
+  path: PathLike,
+  encoding: BufferEncoding,
+): Promise<string>
+
+/**
+ * Asynchronously decompresses the entire contents of a file.
+ *
+ * @param path A path to a file.
+ * @param options An object optionally specifying the encoding and flag.
+ * @param options.encoding The encoding for the file.
+ * @param options.flags The flags for the file.
+ *
+ * @returns A Promise that resolves with a string containing the decompressed
+ * contents of the file.
+ *
+ * @example
+ * ```js
+ * const text = await decompressFile('ActorInfo.product.sbyml', {encoding: 'utf8'})
+ * await writeFile('ActorInfo.product.byml', text)
+ * ```
+ */
+export async function decompressFile(
+  path: PathLike,
+  options: {encoding: BufferEncoding; flag?: OpenMode},
+): Promise<string>
+
+/**
+ * Asynchronously decompresses the entire contents of a file.
+ *
+ * @param path A path to a file.
+ * @param options An object optionally specifying the encoding and flag.
+ * @param options.encoding The encoding for the file.
+ * @param options.flags The flags for the file.
+ *
+ * @returns A Promise that resolves with a Buffer containing the decompressed
+ * contents of the file.
+ *
+ * @example
+ * ```js
+ * const buffer = await decompressFile('ActorInfo.product.sbyml', {falgs: 'r'})
+ * await writeFile('ActorInfo.product.byml', buffer)
+ * ```
+ */
+export async function decompressFile(
+  path: PathLike,
+  options: {encoding?: null; flag?: OpenMode},
+): Promise<Buffer>
+
+export async function decompressFile(
+  path: PathLike,
+  encodingOrOptions?:
+    | null
+    | BufferEncoding
+    | {encoding?: BufferEncoding | null; flag?: OpenMode},
+): Promise<Buffer | string> {
+  return new Promise((resolve, reject) => {
+    try {
+      const {encoding, flag}: {encoding?: BufferEncoding; flag?: string} =
+        encodingOrOptions == null
+          ? {}
+          : typeof encodingOrOptions === 'string'
+          ? {encoding: encodingOrOptions}
+          : (encodingOrOptions as {encoding?: BufferEncoding; flag?: string})
+      // const options =
+      //   encodingOrOptions == null
+      //     ? undefined
+      //     : typeof encodingOrOptions === 'string'
+      //     ? encodingOrOptions
+      //     : {
+      //         encoding: encodingOrOptions.encoding || undefined,
+      //         flags: encodingOrOptions.flag as string | undefined,
+      //       }
+
+      const buffers: Buffer[] = []
+      createReadStream(path, {flags: flag})
+        .pipe(decompress())
+        .on('data', (data: Buffer) => {
+          buffers.push(data)
+        })
+        .on('end', () => {
+          const buffer = Buffer.concat(buffers)
+          resolve(encoding == null ? buffer : buffer.toString(encoding))
+        })
+        .on('error', reject)
+    } catch (err) {
+      reject(err)
+    }
   })
 }
