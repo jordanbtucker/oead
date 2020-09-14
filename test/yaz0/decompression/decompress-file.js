@@ -3,7 +3,7 @@ const {readdir, readFile} = require('fs').promises
 const {join} = require('path')
 const t = require('tap')
 
-const {decompressFile} = require('../../..').yaz0
+const {decompressFile} = require('../../../lib').yaz0
 
 t.test('decompressFile', async t => {
   t.test('no options', async t => {
