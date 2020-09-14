@@ -75,6 +75,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#chunks_per_group" class="tsd-kind-icon">CHUNKS_<wbr>PER_<wbr>GROUP</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#chunk_distance_offset" class="tsd-kind-icon">CHUNK_<wbr>DISTANCE_<wbr>OFFSET</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#chunk_distance_width" class="tsd-kind-icon">CHUNK_<wbr>DISTANCE_<wbr>WIDTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#default_decompressed_buffer_limit" class="tsd-kind-icon">DEFAULT_<wbr>DECOMPRESSED_<wbr>BUFFER_<wbr>LIMIT</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#group_header_length" class="tsd-kind-icon">GROUP_<wbr>HEADER_<wbr>LENGTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#header_length" class="tsd-kind-icon">HEADER_<wbr>LENGTH</a></li>
@@ -84,6 +85,7 @@
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#max_chunk_input_length" class="tsd-kind-icon">MAX_<wbr>CHUNK_<wbr>INPUT_<wbr>LENGTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#max_chunk_output_length" class="tsd-kind-icon">MAX_<wbr>CHUNK_<wbr>OUTPUT_<wbr>LENGTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#max_group_output_length" class="tsd-kind-icon">MAX_<wbr>GROUP_<wbr>OUTPUT_<wbr>LENGTH</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#max_short_chunk_output_length" class="tsd-kind-icon">MAX_<wbr>SHORT_<wbr>CHUNK_<wbr>OUTPUT_<wbr>LENGTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#min_backref_chunk_input_length" class="tsd-kind-icon">MIN_<wbr>BACKREF_<wbr>CHUNK_<wbr>INPUT_<wbr>LENGTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#min_chunk_input_length" class="tsd-kind-icon">MIN_<wbr>CHUNK_<wbr>INPUT_<wbr>LENGTH</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="_yaz0_constants_.html#min_group_input_length" class="tsd-kind-icon">MIN_<wbr>GROUP_<wbr>INPUT_<wbr>LENGTH</a></li>
@@ -101,7 +103,7 @@
 					<div class="tsd-signature tsd-kind-icon">CHUNKS_<wbr>PER_<wbr>GROUP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">8</span><span class="tsd-signature-symbol"> = 8</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:29</li>
+							<li>Defined in yaz0/constants.ts:32</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -126,12 +128,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="chunk_distance_width" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> CHUNK_<wbr>DISTANCE_<wbr>WIDTH</h3>
+					<div class="tsd-signature tsd-kind-icon">CHUNK_<wbr>DISTANCE_<wbr>WIDTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">12</span><span class="tsd-signature-symbol"> = 12</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in yaz0/constants.ts:23</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The width of a Yaz0 chunk distance in bits.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
 					<a name="default_decompressed_buffer_limit" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> DEFAULT_<wbr>DECOMPRESSED_<wbr>BUFFER_<wbr>LIMIT</h3>
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>DECOMPRESSED_<wbr>BUFFER_<wbr>LIMIT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 100 * 1024 * 1024</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:47</li>
+							<li>Defined in yaz0/constants.ts:53</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -177,7 +194,7 @@
 					<div class="tsd-signature tsd-kind-icon">LONG_<wbr>CHUNK_<wbr>LENGTH_<wbr>OFFSET<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">18</span><span class="tsd-signature-symbol"> = 18</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:26</li>
+							<li>Defined in yaz0/constants.ts:29</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -207,7 +224,7 @@
 					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>CHUNK_<wbr>DISTANCE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">4096</span><span class="tsd-signature-symbol"> = 4096</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:32</li>
+							<li>Defined in yaz0/constants.ts:35</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -237,7 +254,7 @@
 					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>CHUNK_<wbr>OUTPUT_<wbr>LENGTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">273</span><span class="tsd-signature-symbol"> = 273</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:35</li>
+							<li>Defined in yaz0/constants.ts:38</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -252,12 +269,27 @@
 					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>GROUP_<wbr>OUTPUT_<wbr>LENGTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = MAX_CHUNK_OUTPUT_LENGTH * CHUNKS_PER_GROUP</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:42</li>
+							<li>Defined in yaz0/constants.ts:48</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The maximum length of a decompressed Yaz0 group in bytes.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="max_short_chunk_output_length" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> MAX_<wbr>SHORT_<wbr>CHUNK_<wbr>OUTPUT_<wbr>LENGTH</h3>
+					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>SHORT_<wbr>CHUNK_<wbr>OUTPUT_<wbr>LENGTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">17</span><span class="tsd-signature-symbol"> = 17</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in yaz0/constants.ts:41</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The maximum length of a decompressed short Yaz0 chunk in bytes.</p>
 						</div>
 					</div>
 				</section>
@@ -297,7 +329,7 @@
 					<div class="tsd-signature tsd-kind-icon">MIN_<wbr>GROUP_<wbr>INPUT_<wbr>LENGTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = GROUP_HEADER_LENGTH + MIN_CHUNK_INPUT_LENGTH * CHUNKS_PER_GROUP</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:38</li>
+							<li>Defined in yaz0/constants.ts:44</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -312,7 +344,7 @@
 					<div class="tsd-signature tsd-kind-icon">SHORT_<wbr>CHUNK_<wbr>LENGTH_<wbr>OFFSET<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> = 2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in yaz0/constants.ts:23</li>
+							<li>Defined in yaz0/constants.ts:26</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -352,6 +384,9 @@
 						<a href="_yaz0_constants_.html#chunk_distance_offset" class="tsd-kind-icon">CHUNK_<wbr>DISTANCE_<wbr>OFFSET</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="_yaz0_constants_.html#chunk_distance_width" class="tsd-kind-icon">CHUNK_<wbr>DISTANCE_<wbr>WIDTH</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
 						<a href="_yaz0_constants_.html#default_decompressed_buffer_limit" class="tsd-kind-icon">DEFAULT_<wbr>DECOMPRESSED_<wbr>BUFFER_<wbr>LIMIT</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module">
@@ -377,6 +412,9 @@
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module">
 						<a href="_yaz0_constants_.html#max_group_output_length" class="tsd-kind-icon">MAX_<wbr>GROUP_<wbr>OUTPUT_<wbr>LENGTH</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module">
+						<a href="_yaz0_constants_.html#max_short_chunk_output_length" class="tsd-kind-icon">MAX_<wbr>SHORT_<wbr>CHUNK_<wbr>OUTPUT_<wbr>LENGTH</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module">
 						<a href="_yaz0_constants_.html#min_backref_chunk_input_length" class="tsd-kind-icon">MIN_<wbr>BACKREF_<wbr>CHUNK_<wbr>INPUT_<wbr>LENGTH</a>

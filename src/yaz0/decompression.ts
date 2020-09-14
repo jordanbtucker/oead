@@ -3,6 +3,7 @@ import {Transform, TransformCallback} from 'stream'
 import {
   CHUNKS_PER_GROUP,
   CHUNK_DISTANCE_OFFSET,
+  CHUNK_DISTANCE_WIDTH,
   DEFAULT_DECOMPRESSED_BUFFER_LIMIT,
   GROUP_HEADER_LENGTH,
   HEADER_LENGTH,
@@ -141,7 +142,7 @@ export function decompress(options?: {
         const distance = (chunk & 0x0fff) + CHUNK_DISTANCE_OFFSET
         const length = isLongChunk
           ? input[pos++] + LONG_CHUNK_LENGTH_OFFSET
-          : (chunk >> 12) + SHORT_CHUNK_LENGTH_OFFSET
+          : (chunk >> CHUNK_DISTANCE_WIDTH) + SHORT_CHUNK_LENGTH_OFFSET
 
         // If the distance is too far from the end of the output, the input is
         // invalid.
