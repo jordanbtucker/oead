@@ -19,10 +19,10 @@ export const MAX_CHUNK_INPUT_LENGTH = 3
 /** The value added to the distance of a Yaz0 chunk. */
 export const CHUNK_DISTANCE_OFFSET = 1
 
-/** The valud added to a the length of a short Yaz0 chunk. */
+/** The value added to a the length of a short Yaz0 chunk. */
 export const SHORT_CHUNK_LENGTH_OFFSET = 2
 
-/** The valud added to a the length of a long Yaz0 chunk. */
+/** The value added to a the length of a long Yaz0 chunk. */
 export const LONG_CHUNK_LENGTH_OFFSET = 18
 
 /** The number of chunks in a Yaz0 group. */
