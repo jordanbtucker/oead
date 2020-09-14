@@ -12,6 +12,7 @@ and this project adheres to
 
 - Naive implementation of Yaz0 compression.
 - A `compressBuffer` function.
+- A `compressFile` function.
 
 ## [0.2.0] - 2020-09-13
 

@@ -1,3 +1,4 @@
+import {createReadStream, PathLike} from 'fs'
 import {Transform, TransformCallback} from 'stream'
 import {
   CHUNKS_PER_GROUP,
@@ -99,6 +100,42 @@ export async function compressBuffer(buffer: Buffer): Promise<Buffer> {
         })
         .on('error', reject)
         .end(buffer)
+    } catch (err) {
+      reject(err)
+    }
+  })
+}
+
+/**
+ * Asynchronously compresses the entire contents of a file.
+ *
+ * **Warning:** This implementation currently performs no real compression, and
+ * in fact results in larger files, but it does produce valid Yaz0 files.
+ *
+ * @param path A path to a file.
+ *
+ * @returns A Promise that resolves with a Buffer containing the compressed
+ * contents of the file.
+ *
+ * @example
+ * ```js
+ * const buffer = await compressFile('ActorInfo.product.byml')
+ * await writeFile('ActorInfo.product.sbyml', buffer)
+ * ```
+ */
+export async function compressFile(path: PathLike): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    try {
+      const buffers: Buffer[] = []
+      createReadStream(path)
+        .pipe(compress())
+        .on('data', (data: Buffer) => {
+          buffers.push(data)
+        })
+        .on('end', () => {
+          resolve(Buffer.concat(buffers))
+        })
+        .on('error', reject)
     } catch (err) {
       reject(err)
     }
