@@ -6,7 +6,7 @@ const t = require('tap')
 const {decompressFile} = require('../../../lib').yaz0
 
 t.test('decompressFile', async t => {
-  t.test('no options', async t => {
+  await t.test('no options', async t => {
     const fixtureNames = await readdir('test/yaz0/fixtures/compressed')
     for (const fixtureName of fixtureNames) {
       await t.test(fixtureName, async () => {
@@ -18,7 +18,7 @@ t.test('decompressFile', async t => {
       })
     }
   })
-  t.test('encoding', async t => {
+  await t.test('encoding', async t => {
     const fixtureNames = (
       await readdir('test/yaz0/fixtures/compressed')
     ).filter(name => name === 'lorem.stxt')
