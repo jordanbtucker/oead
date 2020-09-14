@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Removed the `options` param from `decompressFile`.
+
 ## [0.1.0] - 2020-09-13
 
 ### Added
