@@ -36,7 +36,7 @@
   },
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "run-s clean compile",
+    "build": "run-s clean compile docs",
     "clean": "rimraf lib",
     "compile": "tsc",
     "coverage": "run-s -c spec tap-coverage",
@@ -44,7 +44,7 @@
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx --fix .",
     "lint": "run-s eslint prettier",
     "prettier": "prettier --loglevel warn --write **/*.{babelrc,css,html,js,json,jsx,md,scss,ts,tsx,yml}",
-    "preversion": "run-s test docs",
+    "preversion": "run-s test",
     "spec": "run-s build tap",
     "start": "node lib",
     "tap": "tap -R spec -t 0 --test-ignore /util/",
