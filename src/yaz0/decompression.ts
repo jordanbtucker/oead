@@ -328,23 +328,38 @@ export function decompress(options?: {
  * Asynchronously decompresses the entire contents of a file.
  *
  * @param path A path to a file.
+
+ * @returns A Promise that resolves with a Buffer containing the decompressed
+ * contents of the file.
+ *
+ * @example
+ * ```js
+ * const buffer = await decompressFile('ActorInfo.product.sbyml')
+ * await writeFile('ActorInfo.product.byml', buffer)
+ * ```
+ */
+export async function decompressFile(path: PathLike): Promise<Buffer>
+
+/**
+ * Asynchronously decompresses the entire contents of a file.
+ *
+ * @param path A path to a file.
  * @param encoding The encoding for the file.
 
  * @returns A Promise that resolves with a string containing the decompressed
  * contents of the file.
  *
- * @example Getting a buffer
- * ```js
- * const buffer = await decompressFile('ActorInfo.product.sbyml')
- * await writeFile('ActorInfo.product.byml', buffer)
- * ```
- *
- * @example Getting a string
+ * @example
  * ```js
  * const text = await decompressFile('ActorInfo.product.sbyml', 'utf8')
  * await writeFile('ActorInfo.product.byml', text)
  * ```
  */
+export async function decompressFile(
+  path: PathLike,
+  encoding: BufferEncoding,
+): Promise<string>
+
 export async function decompressFile(
   path: PathLike,
   encoding?: BufferEncoding,
