@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- A `decompressBuffer` function.
+
 ### Changed
 
 - Removed the `options` param from `decompressFile`.

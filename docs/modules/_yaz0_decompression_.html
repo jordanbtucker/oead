@@ -74,6 +74,7 @@
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_yaz0_decompression_.html#decompress" class="tsd-kind-icon">decompress</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_yaz0_decompression_.html#decompressbuffer" class="tsd-kind-icon">decompress<wbr>Buffer</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_yaz0_decompression_.html#decompressfile" class="tsd-kind-icon">decompress<wbr>File</a></li>
 							</ul>
 						</section>
@@ -155,6 +156,84 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="decompressbuffer" class="tsd-anchor"></a>
+					<h3>decompress<wbr>Buffer</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">decompress<wbr>Buffer<span class="tsd-signature-symbol">(</span>buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">decompress<wbr>Buffer<span class="tsd-signature-symbol">(</span>buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, encoding<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BufferEncoding</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in yaz0/decompression.ts:342</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Asynchronously decompresses the contents of a Buffer.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> compressedBuffer = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;ActorInfo.product.sbyml&#x27;</span>)
+<span class="hljs-keyword">const</span> decompressedBuffer = <span class="hljs-keyword">await</span> decompressBuffer(compressedBuffer)
+<span class="hljs-keyword">await</span> writeFile(<span class="hljs-string">&#x27;ActorInfo.product.byml&#x27;</span>, decompressedBuffer)</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Buffer</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A buffer to decompress.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A Promise that resolves with a Buffer containing the decompressed
+							data.</p>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in yaz0/decompression.ts:360</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Asynchronously decompresses the contents of a Buffer.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> compressedBuffer = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;ActorInfo.product.sbyml&#x27;</span>)
+<span class="hljs-keyword">const</span> decompressedText = <span class="hljs-keyword">await</span> decompressBuffer(compressedBuffer, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+<span class="hljs-keyword">await</span> writeFile(<span class="hljs-string">&#x27;ActorInfo.product.byml&#x27;</span>, decompressedText)</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Buffer</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A buffer to decompress.</p>
+									</div>
+								</li>
+								<li>
+									<h5>encoding: <span class="tsd-signature-type">BufferEncoding</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The encoding of the data.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A Promise that resolves with a string containing the decompressed
+							data.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="decompressfile" class="tsd-anchor"></a>
 					<h3>decompress<wbr>File</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -165,7 +244,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in yaz0/decompression.ts:341</li>
+									<li>Defined in yaz0/decompression.ts:402</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -195,7 +274,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in yaz0/decompression.ts:358</li>
+									<li>Defined in yaz0/decompression.ts:419</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -256,6 +335,9 @@
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="_yaz0_decompression_.html#decompress" class="tsd-kind-icon">decompress</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_yaz0_decompression_.html#decompressbuffer" class="tsd-kind-icon">decompress<wbr>Buffer</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="_yaz0_decompression_.html#decompressfile" class="tsd-kind-icon">decompress<wbr>File</a>

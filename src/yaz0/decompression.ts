@@ -325,6 +325,67 @@ export function decompress(options?: {
 }
 
 /**
+ * Asynchronously decompresses the contents of a Buffer.
+ *
+ * @param buffer A buffer to decompress.
+ *
+ * @returns A Promise that resolves with a Buffer containing the decompressed
+ * data.
+ *
+ * @example
+ * ```js
+ * const compressedBuffer = await readFile('ActorInfo.product.sbyml')
+ * const decompressedBuffer = await decompressBuffer(compressedBuffer)
+ * await writeFile('ActorInfo.product.byml', decompressedBuffer)
+ * ```
+ */
+export async function decompressBuffer(buffer: Buffer): Promise<Buffer>
+
+/**
+ * Asynchronously decompresses the contents of a Buffer.
+ *
+ * @param buffer A buffer to decompress.
+ * @param encoding The encoding of the data.
+ *
+ * @returns A Promise that resolves with a string containing the decompressed
+ * data.
+ *
+ * @example
+ * ```js
+ * const compressedBuffer = await readFile('ActorInfo.product.sbyml')
+ * const decompressedText = await decompressBuffer(compressedBuffer, 'utf8')
+ * await writeFile('ActorInfo.product.byml', decompressedText)
+ * ```
+ */
+export async function decompressBuffer(
+  buffer: Buffer,
+  encoding: BufferEncoding,
+): Promise<string>
+
+export async function decompressBuffer(
+  buffer: Buffer,
+  encoding?: BufferEncoding,
+): Promise<Buffer | string> {
+  return new Promise((resolve, reject) => {
+    try {
+      const buffers: Buffer[] = []
+      decompress()
+        .on('data', (data: Buffer) => {
+          buffers.push(data)
+        })
+        .on('end', () => {
+          const buffer = Buffer.concat(buffers)
+          resolve(encoding == null ? buffer : buffer.toString(encoding))
+        })
+        .on('error', reject)
+        .end(buffer)
+    } catch (err) {
+      reject(err)
+    }
+  })
+}
+
+/**
  * Asynchronously decompresses the entire contents of a file.
  *
  * @param path A path to a file.
