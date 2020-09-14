@@ -1,17 +1,40 @@
 {
   "name": "oead",
   "version": "0.0.0",
-  "description": "Starting point for TypeScript projects",
-  "private": true,
-  "main": "lib",
-  "types": "lib/index.d.ts",
+  "description": "A library for recent Nintendo EAD formats in first-party games.",
+  "keywords": [
+    "oead",
+    "nintendo",
+    "botw",
+    "zelda"
+  ],
+  "homepage": "https://github.com/jordanbtucker/oead",
+  "bugs": {
+    "url": "https://github.com/jordanbtucker/oead/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Jordan Tucker",
+    "url": "https://github.com/jordanbtucker"
+  },
   "files": [
     "lib",
     "src"
   ],
+  "main": "lib",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jordanbtucker/oead.git"
+  },
   "engines": {
     "node": "^10.17 || ^12 || >=14"
   },
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "run-s clean compile",
     "clean": "rimraf lib",
