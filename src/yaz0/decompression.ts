@@ -15,29 +15,49 @@ import {
   SHORT_CHUNK_LENGTH_OFFSET,
 } from './constants'
 
-/** Options for configuring Yaz0 decompression. */
-interface DecompressOptions {
-  /** The target length of the buffer used for decompressed data. */
-  decompressedBufferLimit: number
-}
-
 /**
  * Decompresses a stream that has been compressed via the Yaz0 algorithm.
  *
- * @param options Options for configuring the decompression.
  * @returns A Transform stream that accepts compressed data and outputs
  * decompressed data.
+ *
  * @example
- * ```
+ * ```js
  * createReadStream('ActorInfo.product.sbyml')
  *   .pipe(decompress())
  *   .pipe(createWriteStream('ActorInfo.product.byml'))
  * ```
  */
-export function decompress(options?: DecompressOptions): Transform {
-  const {decompressedBufferLimit} = options || {
-    decompressedBufferLimit: DEFAULT_DECOMPRESSED_BUFFER_LIMIT,
-  }
+export function decompress(): Transform
+
+/**
+ * Decompresses a stream that has been compressed via the Yaz0 algorithm.
+ *
+ * @param options Options for configuring the decompression.
+ * @param options.decompressedBufferLimit The target length of the buffer used
+ * for decompressed data.
+ *
+ * @returns A Transform stream that accepts compressed data and outputs
+ * decompressed data.
+ *
+ * @example
+ * ```js
+ * createReadStream('ActorInfo.product.sbyml')
+ *   .pipe(decompress({decompressedBufferLimit: 50 * 1024 * 1024}))
+ *   .pipe(createWriteStream('ActorInfo.product.byml'))
+ * ```
+ */
+export function decompress(options: {
+  decompressedBufferLimit?: number
+}): Transform
+
+export function decompress(options?: {
+  decompressedBufferLimit?: number
+}): Transform {
+  const decompressedBufferLimit =
+    options == null || options.decompressedBufferLimit == null
+      ? DEFAULT_DECOMPRESSED_BUFFER_LIMIT
+      : options.decompressedBufferLimit
 
   let input = Buffer.alloc(0)
   let pos = 0
