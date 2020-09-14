@@ -419,15 +419,6 @@ export async function decompressFile(
           : typeof encodingOrOptions === 'string'
           ? {encoding: encodingOrOptions}
           : (encodingOrOptions as {encoding?: BufferEncoding; flag?: string})
-      // const options =
-      //   encodingOrOptions == null
-      //     ? undefined
-      //     : typeof encodingOrOptions === 'string'
-      //     ? encodingOrOptions
-      //     : {
-      //         encoding: encodingOrOptions.encoding || undefined,
-      //         flags: encodingOrOptions.flag as string | undefined,
-      //       }
 
       const buffers: Buffer[] = []
       createReadStream(path, {flags: flag})
