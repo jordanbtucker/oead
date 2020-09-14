@@ -67,3 +67,40 @@ export function compress(): Transform {
     },
   })
 }
+
+/**
+ * Asynchronously compresses the contents of a Buffer.
+ *
+ * **Warning:** This implementation currently performs no real compression, and
+ * in fact results in larger files, but it does produce valid Yaz0 files.
+ *
+ * @param buffer A buffer to compress.
+ *
+ * @returns A Promise that resolves with a Buffer containing the compressed
+ * data.
+ *
+ * @example
+ * ```js
+ * const fileBuffer = await readFile('ActorInfo.product.byml')
+ * const compressedBuffer = await compressBuffer(fileBuffer)
+ * await writeFile('ActorInfo.product.sbyml', compressedBuffer)
+ * ```
+ */
+export async function compressBuffer(buffer: Buffer): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    try {
+      const buffers: Buffer[] = []
+      compress()
+        .on('data', (data: Buffer) => {
+          buffers.push(data)
+        })
+        .on('end', () => {
+          resolve(Buffer.concat(buffers))
+        })
+        .on('error', reject)
+        .end(buffer)
+    } catch (err) {
+      reject(err)
+    }
+  })
+}

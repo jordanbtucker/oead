@@ -74,6 +74,7 @@
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_yaz0_compression_.html#compress" class="tsd-kind-icon">compress</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_yaz0_compression_.html#compressbuffer" class="tsd-kind-icon">compress<wbr>Buffer</a></li>
 							</ul>
 						</section>
 					</div>
@@ -113,6 +114,48 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="compressbuffer" class="tsd-anchor"></a>
+					<h3>compress<wbr>Buffer</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">compress<wbr>Buffer<span class="tsd-signature-symbol">(</span>buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in yaz0/compression.ts:89</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Asynchronously compresses the contents of a Buffer.</p>
+								</div>
+								<p><strong>Warning:</strong> This implementation currently performs no real compression, and
+								in fact results in larger files, but it does produce valid Yaz0 files.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> fileBuffer = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;ActorInfo.product.byml&#x27;</span>)
+<span class="hljs-keyword">const</span> compressedBuffer = <span class="hljs-keyword">await</span> compressBuffer(fileBuffer)
+<span class="hljs-keyword">await</span> writeFile(<span class="hljs-string">&#x27;ActorInfo.product.sbyml&#x27;</span>, compressedBuffer)</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Buffer</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A buffer to compress.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A Promise that resolves with a Buffer containing the compressed
+							data.</p>
+						</li>
+					</ul>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -142,6 +185,9 @@
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="_yaz0_compression_.html#compress" class="tsd-kind-icon">compress</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_yaz0_compression_.html#compressbuffer" class="tsd-kind-icon">compress<wbr>Buffer</a>
 					</li>
 				</ul>
 			</nav>
