@@ -30,76 +30,70 @@ t.test('decompress', async t => {
  */
 async function assertStreamsAreEqual(actual, expected) {
   return new Promise((resolve, reject) => {
-    let bufAct = Buffer.alloc(0)
-    let bufExp = Buffer.alloc(0)
-    let pos = 0
+    let actBuffers = []
+    let expBuffers = []
     let isActEnded = false
     let isExpEnded = false
 
     actual
       .on('data', data => {
-        bufAct = Buffer.concat([bufAct, data])
-        assertBuffersAreEqual()
+        actBuffers.push(data)
       })
       .on('end', () => {
         isActEnded = true
-        assertStreamLengthsAreEqual()
+        assertStreamsAreEqual()
       })
       .on('error', reject)
 
     expected
       .on('data', data => {
-        bufExp = Buffer.concat([bufExp, data])
-        assertBuffersAreEqual()
+        expBuffers.push(data)
       })
       .on('end', () => {
         isExpEnded = true
-        assertStreamLengthsAreEqual()
+        assertStreamsAreEqual()
       })
       .on('error', reject)
 
-    function assertBuffersAreEqual() {
-      if (pos < bufAct.byteLength && pos < bufExp.byteLength) {
-        const end = Math.min(bufAct.byteLength, bufExp.byteLength)
-
-        for (let i = pos; i < end; i += 32) {
-          const sliceAct = bufAct.slice(i, Math.min(i + 32, end))
-          const sliceExp = bufExp.slice(i, Math.min(i + 32, end))
-          try {
-            deepStrictEqual(
-              sliceAct.toJSON(),
-              sliceExp.toJSON(),
-              `Buffers are not equal at ${i}.\n Actual:   ${JSON.stringify(
-                sliceAct.toJSON(),
-              )}\nExpected: ${JSON.stringify(sliceExp.toJSON())}`,
-            )
-          } catch (err) {
-            reject(err)
-            destroyStreams(err)
-          }
-        }
-        pos = end
-      }
-    }
-
-    function assertStreamLengthsAreEqual() {
+    function assertStreamsAreEqual() {
       if (isActEnded && isExpEnded) {
+        const actBuffer = Buffer.concat(actBuffers)
+        const expBuffer = Buffer.concat(expBuffers)
+
         try {
           strictEqual(
-            bufAct.byteLength,
-            bufExp.byteLength,
-            'Stream lengths are not equal',
+            actBuffer.byteLength,
+            expBuffer.byteLength,
+            'Stream lengths do not match',
           )
+
+          // Assert that the two buffers are equal, and if they are not, iterate
+          // through the buffers to find and report the position of the first
+          // discrepancy. This speeds up the test on success and slows it down
+          // on failure.
+          try {
+            deepStrictEqual(actBuffer, expBuffer)
+          } catch {
+            for (let i = 0; i < actBuffer.byteLength; i += 32) {
+              const actSlice = actBuffer.slice(i, i + 32)
+              const expSlice = expBuffer.slice(i, i + 32)
+              deepStrictEqual(
+                actSlice,
+                expSlice,
+                `Buffers are not equal at ${i}.\n Actual:   ${JSON.stringify(
+                  actSlice.toJSON(),
+                )}\nExpected: ${JSON.stringify(expSlice.toJSON())}`,
+              )
+            }
+          }
+
           resolve()
         } catch (err) {
           reject(err)
+          actual.destroy(err)
+          expected.destroy(err)
         }
       }
-    }
-
-    function destroyStreams(err) {
-      actual.destroy(err)
-      expected.destroy(err)
     }
   })
 }
