@@ -149,7 +149,7 @@ export function decompress(options?: {
         const end = start + length
         if (start < 0) {
           throw getInvalidInputError(
-            'Tried to back reference data further back than the maximum distance.',
+            'Tried to reference data further back than the maximum distance.',
           )
         }
 
