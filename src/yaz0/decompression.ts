@@ -346,7 +346,7 @@ export function decompress(options?: {
 /**
  * Asynchronously decompresses the contents of a Buffer.
  *
- * @param buffer A buffer to decompress.
+ * @param buffer The buffer to decompress.
  *
  * @returns A Promise that resolves with a Buffer containing the decompressed
  * data.
@@ -363,7 +363,7 @@ export async function decompressBuffer(buffer: Buffer): Promise<Buffer>
 /**
  * Asynchronously decompresses the contents of a Buffer.
  *
- * @param buffer A buffer to decompress.
+ * @param buffer The buffer to decompress.
  * @param encoding The encoding of the data.
  *
  * @returns A Promise that resolves with a string containing the decompressed
@@ -425,7 +425,7 @@ export async function decompressFile(path: PathLike): Promise<Buffer>
  *
  * @param path The path to the compressed file.
  * @param options An object specifying the encoding.
- * @param options.encoding The encoding for the file.
+ * @param options.encoding The encoding of the file.
  *
  * @returns A Promise that resolves with a Buffer containing the decompressed
  * contents of the file.
@@ -449,7 +449,7 @@ export async function decompressFile(
  *
  * @param path The path to the compressed file.
  * @param options An object specifying the encoding.
- * @param options.encoding The encoding for the file.
+ * @param options.encoding The encoding of the file.
  *
  * @returns A Promise that resolves with a string containing the decompressed
  * contents of the file.
