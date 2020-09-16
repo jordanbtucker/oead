@@ -550,7 +550,7 @@ export async function decompressFile(
       }
     } finally {
       // Clean up any temporary paths.
-      if (tempPath != null) {
+      if (tempPath != null && existsSync(tempPath)) {
         const parentPath = dirname(tempPath)
         await unlink(tempPath)
         await rmdir(parentPath)
