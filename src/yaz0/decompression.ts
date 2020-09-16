@@ -20,11 +20,11 @@ import {
   HEADER_LENGTH,
   LONG_CHUNK_LENGTH_OFFSET,
   MAGIC_STRING,
-  MAX_CHUNK_INPUT_LENGTH,
+  MAX_COMPRESSED_CHUNK_LENGTH,
   MAX_CHUNK_DISTANCE,
-  MAX_GROUP_OUTPUT_LENGTH,
-  MIN_GROUP_INPUT_LENGTH,
-  MIN_BACKREF_CHUNK_INPUT_LENGTH,
+  MAX_DECOMPRESSED_GROUP_LENGTH,
+  MIN_COMPRESSED_GROUP_LENGTH,
+  MIN_COMPRESSED_CHUNK_LENGTH,
   SHORT_CHUNK_LENGTH_OFFSET,
 } from './constants'
 
@@ -137,19 +137,19 @@ export function decompress(options?: {
         // A clear bit means the next chunk is a reference to a previous
         // sequence of data in the decompressed output. If we have not received
         // enough data to read the next chunk, the input is invalid.
-        if (input.byteLength - pos < MIN_BACKREF_CHUNK_INPUT_LENGTH) {
+        if (input.byteLength - pos < MIN_COMPRESSED_CHUNK_LENGTH) {
           throw getInvalidInputError('The input ended prematurely.')
         }
 
         // The chunk is either long or short. If the chunk is long and we have
         // not received enough data to read the chunk, the input is invalid.
         const chunk = input.readUInt16BE(pos)
-        pos += MIN_BACKREF_CHUNK_INPUT_LENGTH
+        pos += MIN_COMPRESSED_CHUNK_LENGTH
         const isLongChunk = (chunk & 0xf000) === 0
         if (
           isLongChunk &&
           input.byteLength - pos <
-            MAX_CHUNK_INPUT_LENGTH - MIN_BACKREF_CHUNK_INPUT_LENGTH
+            MAX_COMPRESSED_CHUNK_LENGTH - MIN_COMPRESSED_CHUNK_LENGTH
         ) {
           throw getInvalidInputError('The input ended prematurely.')
         }
@@ -195,8 +195,8 @@ export function decompress(options?: {
       decompressedRemaining,
       Math.max(
         decompressedBufferLimit,
-        Math.ceil((input.byteLength - pos) / MIN_GROUP_INPUT_LENGTH) *
-          MAX_GROUP_OUTPUT_LENGTH,
+        Math.ceil((input.byteLength - pos) / MIN_COMPRESSED_GROUP_LENGTH) *
+          MAX_DECOMPRESSED_GROUP_LENGTH,
       ),
     )
   }
@@ -285,7 +285,7 @@ export function decompress(options?: {
         // `flush`.
         while (
           input.byteLength - pos >=
-          GROUP_HEADER_LENGTH + MAX_CHUNK_INPUT_LENGTH * CHUNKS_PER_GROUP
+          GROUP_HEADER_LENGTH + MAX_COMPRESSED_CHUNK_LENGTH * CHUNKS_PER_GROUP
         ) {
           const prevDecompressedRemaining = decompressedRemaining
           readGroup()
