@@ -15,7 +15,6 @@ import {
   CHUNKS_PER_GROUP,
   CHUNK_DISTANCE_OFFSET,
   CHUNK_DISTANCE_WIDTH,
-  DEFAULT_DECOMPRESSED_BUFFER_LIMIT,
   GROUP_HEADER_LENGTH,
   HEADER_LENGTH,
   LONG_CHUNK_LENGTH_OFFSET,
@@ -50,33 +49,7 @@ interface FileSystemError extends Error {
  */
 export function decompress(): Transform
 
-/**
- * Decompresses a stream that has been compressed via the Yaz0 algorithm.
- *
- * @param options Options for configuring the decompression.
- * @param options.decompressedBufferLimit The target length of the buffer used
- * for decompressed data.
- *
- * @returns A Transform stream that accepts compressed data and outputs
- * decompressed data.
- *
- * @example
- * ```js
- * createReadStream('ActorInfo.product.sbyml')
- *   .pipe(decompress({decompressedBufferLimit: 50 * 1024 * 1024}))
- *   .pipe(createWriteStream('ActorInfo.product.byml'))
- * ```
- */
-export function decompress(options: {
-  decompressedBufferLimit?: number
-}): Transform
-
-export function decompress(options?: {
-  decompressedBufferLimit?: number
-}): Transform {
-  const decompressedBufferLimit =
-    options?.decompressedBufferLimit ?? DEFAULT_DECOMPRESSED_BUFFER_LIMIT
-
+export function decompress(): Transform {
   let input = Buffer.alloc(0)
   let inputPos = 0
   let isHeaderRead = false
@@ -191,11 +164,8 @@ export function decompress(options?: {
   function getMaxDecompressedRemaining(): number {
     return Math.min(
       decompressedRemaining,
-      Math.max(
-        decompressedBufferLimit,
-        Math.ceil((input.byteLength - inputPos) / MIN_COMPRESSED_GROUP_LENGTH) *
-          MAX_DECOMPRESSED_GROUP_LENGTH,
-      ),
+      Math.ceil((input.byteLength - inputPos) / MIN_COMPRESSED_GROUP_LENGTH) *
+        MAX_DECOMPRESSED_GROUP_LENGTH,
     )
   }
 

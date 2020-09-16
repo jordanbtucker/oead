@@ -47,7 +47,3 @@ export const MIN_COMPRESSED_GROUP_LENGTH =
 /** The maximum length of a decompressed Yaz0 group in bytes. */
 export const MAX_DECOMPRESSED_GROUP_LENGTH =
   MAX_DECOMPRESSED_CHUNK_LENGTH * CHUNKS_PER_GROUP
-
-/** The default target length of the buffer used to store decompressed data
- * during Yaz0 decompression. */
-export const DEFAULT_DECOMPRESSED_BUFFER_LIMIT = 100 * 1024 * 1024
