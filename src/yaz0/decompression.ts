@@ -75,9 +75,7 @@ export function decompress(options?: {
   decompressedBufferLimit?: number
 }): Transform {
   const decompressedBufferLimit =
-    options == null || options.decompressedBufferLimit == null
-      ? DEFAULT_DECOMPRESSED_BUFFER_LIMIT
-      : options.decompressedBufferLimit
+    options?.decompressedBufferLimit ?? DEFAULT_DECOMPRESSED_BUFFER_LIMIT
 
   let input = Buffer.alloc(0)
   let pos = 0
