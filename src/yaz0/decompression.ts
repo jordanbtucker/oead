@@ -468,10 +468,10 @@ export async function decompressFile(
 /**
  * Asynchronously decompresses the entire contents of a file.
  *
- * @param compressedPath The path to the compressed file.
- * @param decompressedPath The path to write the decompressed data to. If the
- * file exists, it will be overwritten. If it is the same path as
- * `compressedPath`, then it will overwrite the file at `compressedPath`.
+ * @param source The path to the compressed file.
+ * @param destination The path to write the decompressed data to. If the file
+ * exists, it will be overwritten. If it is the same path as `source`, then it
+ * will overwrite the file at `source`.
  *
  * @returns A Promise that resolves when the compressed file has been
  * decompressed and written.
@@ -482,32 +482,32 @@ export async function decompressFile(
  * ```
  */
 export async function decompressFile(
-  compressedPath: PathLike,
-  decompressedPath: PathLike,
+  source: PathLike,
+  destination: PathLike,
 ): Promise<void>
 
 export async function decompressFile(
-  compressedPath: PathLike,
-  decompressedPathOrOptions?: {encoding?: BufferEncoding | null} | PathLike,
+  source: PathLike,
+  destinationOrOptions?: {encoding?: BufferEncoding | null} | PathLike,
 ): Promise<Buffer | string | void> {
-  // Check if optionsOrDecompressedPath is a path. If so, decompress the file
-  // and then write it to optionsOrDecompressedPath.
+  // Check if destinationOrOptions is a path. If so, decompress the file and
+  // then write it to destinationOrOptions.
   if (
-    typeof decompressedPathOrOptions === 'string' ||
-    Buffer.isBuffer(decompressedPathOrOptions) ||
-    decompressedPathOrOptions instanceof URL
+    typeof destinationOrOptions === 'string' ||
+    Buffer.isBuffer(destinationOrOptions) ||
+    destinationOrOptions instanceof URL
   ) {
-    const decompressedPath = decompressedPathOrOptions
+    const destination = destinationOrOptions
 
-    // If compressedPath and decompressedPath point to the same file, create a
-    // temporary path to store the decompressed data.
+    // If source and destination point to the same file, create a temporary path
+    // to store the decompressed data.
     const isSamePath =
-      existsSync(decompressedPath) &&
-      (await realpath(compressedPath)) === (await realpath(decompressedPath))
+      existsSync(destination) &&
+      (await realpath(source)) === (await realpath(destination))
     const tempPath = isSamePath
       ? join(await mkdtemp(tmpdir() + sep), 'tmp')
       : undefined
-    const outputPath = tempPath || decompressedPath
+    const outputPath = tempPath || destination
 
     try {
       await new Promise((resolve, reject) => {
@@ -517,7 +517,7 @@ export async function decompressFile(
         let readStream: ReadStream | undefined
         try {
           writeStream = createWriteStream(outputPath)
-          readStream = createReadStream(compressedPath)
+          readStream = createReadStream(source)
           readStream
             .pipe(decompress())
             .pipe(writeStream)
@@ -531,10 +531,10 @@ export async function decompressFile(
         }
       })
 
-      // If compressedPath and decompressedPath point to the same file,
-      // overwrite the compressed file with the decompressed file.
+      // If source and destination point to the same file, overwrite the
+      // compressed file with the decompressed file.
       if (tempPath != null) {
-        await rename(tempPath, compressedPath)
+        await rename(tempPath, source)
       }
     } catch (err) {
       // If the temp file exists on a separate disk than the the compressed
@@ -546,7 +546,7 @@ export async function decompressFile(
         (err as FileSystemError).syscall === 'rename' &&
         (err as FileSystemError).code === 'EXDEV'
       ) {
-        await copyFile(tempPath, compressedPath)
+        await copyFile(tempPath, source)
       }
     } finally {
       // Clean up any temporary paths.
@@ -557,16 +557,17 @@ export async function decompressFile(
       }
     }
   } else {
-    // If optionsOrDecompressedPath is null or undefined, return the
-    // decompressed contents of the file. If the encoding option is a string
-    // return a decoded string; otherwise, return a Buffer.
-    const encoding = decompressedPathOrOptions?.encoding
+    // If destinationOrOptions is null or undefined, return the decompressed
+    // contents of the file. If the encoding option is a string return a decoded
+    // string; otherwise, return a Buffer.
+    const encoding = destinationOrOptions?.encoding
+
     return new Promise((resolve, reject) => {
       try {
         // Create a read stream and pipe it to a decompression stream. Store
         // each data chunk into an array and concatenate them at the end.
         const buffers: Buffer[] = []
-        createReadStream(compressedPath)
+        createReadStream(source)
           .pipe(decompress())
           .on('data', (data: Buffer) => {
             buffers.push(data)
