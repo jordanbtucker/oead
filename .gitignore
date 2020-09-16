@@ -126,3 +126,5 @@ dist
 .history/
 
 /lib
+/test/**/fixtures/temp/**
+!/test/**/fixtures/temp/.gitkeep

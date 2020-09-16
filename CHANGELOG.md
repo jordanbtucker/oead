@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Added an overload to `decompressFile` to write the decompressed data to a
+  path. The `encoding` parameter has been removed, so an encoding can only be
+  specified in the `options` parameter now.
+
 ## [0.2.0] - 2020-09-13
 
 ### Added
