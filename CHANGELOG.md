@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Changed
 
+- Made some performance tweaks to decompression.
 - Added an overload to `decompressFile` to write the decompressed data to a
   path. The `encoding` parameter has been removed, so an encoding can only be
   specified in the `options` parameter now.

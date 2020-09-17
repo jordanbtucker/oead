@@ -44,6 +44,10 @@ export const MAX_DECOMPRESSED_SHORT_CHUNK_LENGTH = 0x11
 export const MIN_COMPRESSED_GROUP_LENGTH =
   GROUP_HEADER_LENGTH + MIN_CHUNK_LENGTH * CHUNKS_PER_GROUP
 
+/** The maximum length of a compressed Yaz0 group in bytes. */
+export const MAX_COMPRESSED_GROUP_LENGTH =
+  GROUP_HEADER_LENGTH + MAX_COMPRESSED_CHUNK_LENGTH * CHUNKS_PER_GROUP
+
 /** The maximum length of a decompressed Yaz0 group in bytes. */
 export const MAX_DECOMPRESSED_GROUP_LENGTH =
   MAX_DECOMPRESSED_CHUNK_LENGTH * CHUNKS_PER_GROUP

@@ -15,19 +15,21 @@ import {
   CHUNKS_PER_GROUP,
   CHUNK_DISTANCE_OFFSET,
   CHUNK_DISTANCE_WIDTH,
-  GROUP_HEADER_LENGTH,
   HEADER_LENGTH,
   LONG_CHUNK_LENGTH_OFFSET,
   MAGIC_STRING,
   MAX_COMPRESSED_CHUNK_LENGTH,
+  MAX_COMPRESSED_GROUP_LENGTH,
   MAX_CHUNK_DISTANCE,
   MAX_DECOMPRESSED_GROUP_LENGTH,
-  MIN_COMPRESSED_GROUP_LENGTH,
   MIN_COMPRESSED_CHUNK_LENGTH,
   SHORT_CHUNK_LENGTH_OFFSET,
 } from './constants'
 
 const {copyFile, mkdtemp, realpath, rename, rmdir, unlink} = fsPromises
+
+/** The maximum length of the output buffer in bytes */
+const MAX_OUTPUT_BUFFER_LENGTH = 65536
 
 interface FileSystemError extends Error {
   code: string
@@ -47,15 +49,14 @@ interface FileSystemError extends Error {
  *   .pipe(createWriteStream('ActorInfo.product.byml'))
  * ```
  */
-export function decompress(): Transform
-
 export function decompress(): Transform {
-  let input = Buffer.alloc(0)
+  let input: Buffer
   let inputPos = 0
   let isHeaderRead = false
   let decompressedRemaining: number
   let output: Buffer
   let outputPos = 0
+  let pendingOutputPos = 0
 
   /** Reads the header from the input buffer. */
   function readHeader() {
@@ -78,18 +79,33 @@ export function decompress(): Transform {
 
     // Allocate enough memory required to store the rest of the decompressed
     // data from the current input buffer at its max potential length.
-    output = Buffer.alloc(getMaxDecompressedRemaining())
+    output = Buffer.alloc(
+      Math.min(MAX_OUTPUT_BUFFER_LENGTH, decompressedRemaining),
+    )
 
     isHeaderRead = true
   }
 
-  /** Reads a single group from the input buffer. */
-  function readGroup() {
+  /** Reads a single group from the input buffer, decompresses it, and writes
+   * the decompressed data. */
+  function decompressGroup() {
     // If we've reached the end of the input buffer, return early.
     if (inputPos === input.byteLength) {
       return
     }
 
+    // If there is not enough room in the output buffer to store either a
+    // decompressed group at its max potential length or the remainder of the
+    // decompressed data, flush the output buffer to ensure there is enough
+    // room.
+    if (
+      output.byteLength - outputPos <
+      Math.min(MAX_DECOMPRESSED_GROUP_LENGTH, decompressedRemaining)
+    ) {
+      flushOutputBuffer()
+    }
+
+    // Each group starts with a header and number of compressed chunks.
     let groupHeader = input[inputPos++]
     let remainingChunks = CHUNKS_PER_GROUP
 
@@ -151,57 +167,51 @@ export function decompress(): Transform {
         }
       }
 
+      // We shift the group header so that we only need to check the first bit
+      // position.
       groupHeader <<= 1
       remainingChunks--
     }
   }
 
   /**
-   * Calculates the amount of memory required to store the rest of the
-   * decompressed data from the current input buffer at its max potential
-   * length.
+   * Flushes all pending data in the output buffer then moves the backreference
+   * window and remaining data of the output buffer to the beginning of the
+   * output buffer to ensure there is enough room to store decompressed data.
    */
-  function getMaxDecompressedRemaining(): number {
-    return Math.min(
-      decompressedRemaining,
-      Math.ceil((input.byteLength - inputPos) / MIN_COMPRESSED_GROUP_LENGTH) *
-        MAX_DECOMPRESSED_GROUP_LENGTH,
-    )
-  }
-
-  /**
-   * Expands the output buffer to store enough memory to decompress the
-   * remainder of the input buffer or the entire stream, whichever is smaller.
-   */
-  function expandOutputBuffer() {
-    const outputAvailable = output.byteLength - outputPos
-
-    // If we have enough room to store the rest of the decompressed data, there
-    // is no need to expand the output buffer.
-    if (outputAvailable >= decompressedRemaining) {
+  function flushOutputBuffer() {
+    // If the output position has not moved, then there is no need to move the
+    // data.
+    if (pendingOutputPos === outputPos) {
       return
     }
 
-    // Calculate the amount of memory required to store the rest of the
-    // decompressed data from the current input buffer at its max potential
-    // length.
-    const maxDecompressedRemaining = getMaxDecompressedRemaining()
+    // Write all pending data from the output buffer.
+    transform.push(Buffer.from(output.slice(pendingOutputPos, outputPos)))
 
-    // If we have enough room to store the rest of the decompressed data, there
-    // is no need to expand the output buffer.
-    if (outputAvailable >= maxDecompressedRemaining) {
+    // If we've decompressed all remaining data, then we only need to write the
+    // pending data.
+    if (decompressedRemaining === 0) {
+      pendingOutputPos = outputPos
       return
     }
 
-    // The new output position must accomdate for the max chunk distance for
-    // backreferences.
-    const newOutputPos = Math.min(outputPos, MAX_CHUNK_DISTANCE)
+    // Get the position of the start of the backreference window, which may be
+    // the start of the output buffer if not enough data has been read.
+    const outputStart = Math.max(outputPos - MAX_CHUNK_DISTANCE, 0)
 
-    const newOutput = Buffer.alloc(newOutputPos + maxDecompressedRemaining)
+    // Get the new output position to be set once the data has been moved. If
+    // the output position has not changed, then there is no need to move the
+    // data.
+    const newOutputPos = outputPos - outputStart
+    if (newOutputPos === outputPos) {
+      return
+    }
 
-    output.copy(newOutput, 0, outputPos - newOutputPos, outputPos)
-    output = newOutput
+    // Move the data and set the new output position.
+    output.copyWithin(0, outputStart, outputPos)
     outputPos = newOutputPos
+    pendingOutputPos = outputPos
   }
 
   /** Returns an error indicating that the input is invalid. */
@@ -212,7 +222,7 @@ export function decompress(): Transform {
     )
   }
 
-  return new Transform({
+  const transform = new Transform({
     transform(
       chunk: Buffer,
       encoding: BufferEncoding,
@@ -221,7 +231,7 @@ export function decompress(): Transform {
       try {
         // If we're in the middle of reading the buffer, append the chunk to the
         // buffer. Otherwise, the chunk is our new buffer.
-        if (inputPos < input.byteLength) {
+        if (input != null && inputPos < input.byteLength) {
           const newInput = Buffer.alloc(
             input.byteLength - inputPos + chunk.byteLength,
           )
@@ -245,33 +255,24 @@ export function decompress(): Transform {
           readHeader()
         }
 
-        expandOutputBuffer()
-        const prevOutputPos = outputPos
-
-        // Read groups while we have enough data to read a group at its max
-        // potential length. This check is performed in `transform` but not in
-        // `flush`.
+        // While we received enough data to read a compressed group at its
+        // maximum potential length, decompress groups until there are no more
+        // groups that can be decompressed.
+        let prevDecompressedRemaining = 0
         while (
-          input.byteLength - inputPos >=
-          GROUP_HEADER_LENGTH + MAX_COMPRESSED_CHUNK_LENGTH * CHUNKS_PER_GROUP
+          prevDecompressedRemaining !== decompressedRemaining &&
+          input.byteLength - inputPos >= MAX_COMPRESSED_GROUP_LENGTH
         ) {
-          const prevDecompressedRemaining = decompressedRemaining
-          readGroup()
-          if (decompressedRemaining === prevDecompressedRemaining) {
-            break
-          }
+          prevDecompressedRemaining = decompressedRemaining
+          decompressGroup()
         }
 
-        const result =
-          outputPos > prevOutputPos
-            ? output.slice(prevOutputPos, outputPos)
-            : undefined
-
-        callback(null, result)
+        callback()
       } catch (err) {
         callback(err)
       }
     },
+
     flush(callback: TransformCallback) {
       try {
         if (!isHeaderRead) {
@@ -284,12 +285,9 @@ export function decompress(): Transform {
           readHeader()
         }
 
-        expandOutputBuffer()
-        const prevOutputPos = outputPos
-
         // Read groups until the end of the stream.
         while (decompressedRemaining > 0) {
-          readGroup()
+          decompressGroup()
         }
 
         // Ensure that the length of decompressed data matches the value in the
@@ -298,17 +296,17 @@ export function decompress(): Transform {
           throw getInvalidInputError()
         }
 
-        const result =
-          outputPos > prevOutputPos
-            ? output.slice(prevOutputPos, outputPos)
-            : undefined
+        // Flush any pending data from the output buffer.
+        flushOutputBuffer()
 
-        callback(null, result)
+        callback()
       } catch (err) {
         callback(err)
       }
     },
   })
+
+  return transform
 }
 
 /**
