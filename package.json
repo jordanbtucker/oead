@@ -1,6 +1,6 @@
 {
   "name": "oead",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A library for recent Nintendo EAD formats in first-party games.",
   "keywords": [
     "oead",
