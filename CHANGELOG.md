@@ -11,6 +11,7 @@ and this project adheres to
 ### Changed
 
 - Added more descriptive text to a couple error messages in `decompress`.
+- Fixed an infinite loop bug in `decompress`.
 
 ## [0.3.0] - 2020-09-16
 

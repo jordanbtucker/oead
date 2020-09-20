@@ -86,12 +86,17 @@ export function decompress(): Transform {
     isHeaderRead = true
   }
 
-  /** Reads a single group from the input buffer, decompresses it, and writes
-   * the decompressed data. */
-  function decompressGroup() {
+  /**
+   * Reads a single group from the input buffer, decompresses it, and writes the
+   * decompressed data.
+   *
+   * @returns True if a group was written to the output buffer; otherwise,
+   * false.
+   */
+  function decompressGroup(): boolean {
     // If we've reached the end of the input buffer, return early.
     if (inputPos === input.byteLength) {
-      return
+      return false
     }
 
     // If there is not enough room in the output buffer to store either a
@@ -172,6 +177,8 @@ export function decompress(): Transform {
       groupHeader <<= 1
       remainingChunks--
     }
+
+    return true
   }
 
   /**
@@ -258,14 +265,10 @@ export function decompress(): Transform {
         // While we received enough data to read a compressed group at its
         // maximum potential length, decompress groups until there are no more
         // groups that can be decompressed.
-        let prevDecompressedRemaining = 0
         while (
-          prevDecompressedRemaining !== decompressedRemaining &&
-          input.byteLength - inputPos >= MAX_COMPRESSED_GROUP_LENGTH
-        ) {
-          prevDecompressedRemaining = decompressedRemaining
+          input.byteLength - inputPos >= MAX_COMPRESSED_GROUP_LENGTH &&
           decompressGroup()
-        }
+        );
 
         callback()
       } catch (err) {
@@ -286,9 +289,7 @@ export function decompress(): Transform {
         }
 
         // Read groups until the end of the stream.
-        while (decompressedRemaining > 0) {
-          decompressGroup()
-        }
+        while (decompressGroup());
 
         // Ensure that the length of decompressed data matches the value in the
         // header. Otherwise, the input is invalid.
