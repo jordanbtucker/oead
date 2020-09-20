@@ -279,7 +279,7 @@ export function decompress(): Transform {
           // If we have not received enough data to read the entire header, the
           // input is invalid.
           if (input.byteLength - inputPos < HEADER_LENGTH) {
-            throw getInvalidInputError()
+            throw getInvalidInputError('The input ended prematurely.')
           }
 
           readHeader()
@@ -293,7 +293,7 @@ export function decompress(): Transform {
         // Ensure that the length of decompressed data matches the value in the
         // header. Otherwise, the input is invalid.
         if (decompressedRemaining !== 0) {
-          throw getInvalidInputError()
+          throw getInvalidInputError('The input ended prematurely.')
         }
 
         // Flush any pending data from the output buffer.
