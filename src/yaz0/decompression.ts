@@ -175,8 +175,8 @@ export function decompress(): Transform {
   }
 
   /**
-   * Flushes all pending data in the output buffer then moves the backreference
-   * window and remaining data of the output buffer to the beginning of the
+   * Flushes all pending data in the output buffer, then moves the backreference
+   * window and remaining data in the output buffer to the beginning of the
    * output buffer to ensure there is enough room to store decompressed data.
    */
   function flushOutputBuffer() {
